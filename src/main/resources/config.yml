@@ -1,0 +1,84 @@
+# DOCUMENTATION: https://docs.artillex-studios.com/axcalendar.html
+
+prefix: "<gradient:#FF0055:#FF0000><b>AxCalendar</b></gradient> &7» "
+
+database:
+  # h2, mysql, postgresql
+  type: "h2"
+
+  # you only need to touch these when using mysql/postgresql
+  address: 127.0.0.1
+  port: 3306
+  database: admin
+  username: admin
+  password: 'admin'
+  pool:
+    maximum-pool-size: 10
+    minimum-idle: 10
+    maximum-lifetime: 1800000
+    keepalive-time: 0
+    connection-timeout: 5000
+
+# which month should the calendar be active in?
+# https://docs.oracle.com/javase/8/docs/api/java/time/Month.html
+# set to AUTO to use the current month
+month: "AUTO"
+
+# https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html
+# set to "" to use the server default
+# example: Europe/London
+timezone: ""
+
+# hours of offset, if everything is working after setting the timezone field, then don't touch this
+timezone-offset: 0
+
+# should players be able to claim their older presents
+allow-late-claiming: true
+
+# how many accounts from one ip can claim a day's present
+# set to -1 to disable
+max-accounts-per-ip: 3
+
+# the format of the %time% placeholder
+# 1 - dd:HH:MM:SS, for example 04:01:25:35
+# 2 - short format, for example 20m
+timer-format: 1
+
+# auto update gui
+# increase this value if heads don't load in properly
+# in ticks
+# set to -1 to disable
+update-gui: 20
+
+# should the player need these to claim presents?
+# list of options:
+# [PLAYTIME] - the playtime statistic of the player (in minutes)
+# [PERMISSION] - require a player to have a permission to claim presents
+# to enable remove the [] and add the one you need without the hashtag:
+#  - "[PLAYTIME] 30"
+#  - "[PERMISSION] some.permission.here"
+claim-requirements: []
+
+# you must define at least 1
+# requires a restart to update
+command-aliases:
+  - "axcalendar"
+  - "calendar"
+  - "adventcalendar"
+  - "axadventcalendar"
+
+# list of sounds: https://www.digminecraft.com/lists/sound_list_pc.php
+# format: <sound>|<volume>|<pitch>
+sounds:
+  claimed: "entity.player.levelup|1|1"
+  failed: "block.anvil.destroy|1|1"
+
+# should be plugin notify you if there is a new update?
+update-notifier:
+  # if enabled, it will display the message in the console
+  enabled: true
+  # if enabled, it will broadcast the update message to all players who have the <plugin-name>.update-notify permission
+  on-join: true
+
+# do not edit
+version: 6
