@@ -2,6 +2,7 @@ package com.artillexstudios.axcalendar.gui.data;
 
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.utils.ItemBuilder;
+import com.artillexstudios.axcalendar.AxCalendar;
 import com.artillexstudios.axcalendar.gui.GuiFrame;
 import com.artillexstudios.axcalendar.gui.impl.CalendarGui;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -51,32 +52,44 @@ public class MenuManager {
         }
 
 
-        for (String route : REWARDS.getBackingDocument().getRoutesAsStrings(false)) {
-            Section s = REWARDS.getSection(route);
-            if (s == null) continue;
+        for (String groupRoute : REWARDS.getBackingDocument().getRoutesAsStrings(false)) {
+            AxCalendar.getInstance().getLogger().info("DEBUG: LOOKING FOR GROUP: " + groupRoute);
+            Section groupSection = REWARDS.getSection(groupRoute);
+            for (String route : groupSection.getRoutesAsStrings(false)) {
+                int group = Integer.valueOf(groupRoute.split("-", 2)[1]);
+                String fullRoute = "group-" + group + "." + route;
+
+                Section s = REWARDS.getSection(fullRoute);
+
+                AxCalendar.getInstance().getLogger().info("DEBUG: FOUND Route: " + fullRoute);
+
+                if (s == null) continue;
 
 
-            IntArrayList dayNum = GuiFrame.getSlots(s.getStringList("days"));
-            if (dayNum.isEmpty()) continue;
+                AxCalendar.getInstance().getLogger().info("DEBUG: FOUND REWARD: " + route + " With route " + fullRoute);
 
-            int group = s.getInt("group");
-            if (group < 1) continue;
+                IntArrayList dayNum = GuiFrame.getSlots(s.getStringList("days"));
+                if (dayNum.isEmpty()) continue;
 
-            String name = route.replaceFirst("group-" + group, "");
+                Reward reward = new Reward(
+                        group,
+                        route,
+                        dayNum,
+                        s.getStringList("commands"),
+                        s.getMapList("items"),
+                        s.getString("message")
+                );
 
-            Reward reward = new Reward(
-                    group,
-                    name,
-                    dayNum,
-                    s.getStringList("commands"),
-                    s.getMapList("items"),
-                    s.getString("message")
-            );
+                AxCalendar.getInstance().getLogger().info("DEBUG: REGISTERING REWARD:");
+                AxCalendar.getInstance().getLogger().info("    group: " + group);
+                AxCalendar.getInstance().getLogger().info("    name: " + route);
+                AxCalendar.getInstance().getLogger().info("    days: " + dayNum);
 
-            for (Integer i : dayNum) {
-                Day day = days.get(i);
-                if (day == null) continue;
-                day.rewards().add(reward);
+                for (Integer i : dayNum) {
+                    Day day = days.get(i);
+                    if (day == null) continue;
+                    day.rewards().add(reward);
+                }
             }
         }
     }

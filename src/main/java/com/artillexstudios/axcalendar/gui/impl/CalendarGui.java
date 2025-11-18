@@ -98,17 +98,17 @@ public class CalendarGui extends GuiFrame {
                                 return;
                             }
 
-                            int amountGroups = CONFIG.getInt("num-groups");
-                            AxCalendar.getDatabase().setGroup(player, (int)(Math.random() * amountGroups) + 1);
-
-                            // get group to verify there was no error in the database
                             int group = AxCalendar.getDatabase().getGroup(player);
+                            AxCalendar.getInstance().getLogger().info("DEBUG: Player " + player.getName() + " is group " + group);
 
                             AxCalendar.getDatabase().claim(player, day);
                             Scheduler.get().run(scheduledTask -> {
+                                AxCalendar.getInstance().getLogger().info("DEBUG: Player " + player.getName() + " is claiming with group " + group);
                                 SoundUtils.playSound(player, CONFIG.getString("sounds.claimed"));
                                 for (Reward reward : day.rewards()) {
+                                    AxCalendar.getInstance().getLogger().info("DEBUG: Player " + player.getName() + "is attempting reward " + reward.name() + " with group " + group);
                                     if (reward.group() != group) continue;
+                                    AxCalendar.getInstance().getLogger().info("DEBUG: Player " + player.getName() + "is claiming reward " + reward.name() + " with group " + group + " executing actions ...");
                                     for (String command : reward.claimCommands()) {
                                         command = command.replace("%player%", player.getName());
                                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), AxCalendar.getPlaceholderParser().setPlaceholders(player, command));
