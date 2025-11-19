@@ -53,7 +53,7 @@ public class MenuManager {
 
 
         for (String groupRoute : REWARDS.getBackingDocument().getRoutesAsStrings(false)) {
-            AxCalendar.getInstance().getLogger().info("DEBUG: LOOKING FOR GROUP: " + groupRoute);
+            AxCalendar.getInstance().getLogger().info("DEBUG: LOOKING IN GROUP: " + groupRoute);
             Section groupSection = REWARDS.getSection(groupRoute);
             for (String route : groupSection.getRoutesAsStrings(false)) {
                 int group = Integer.valueOf(groupRoute.split("-", 2)[1]);

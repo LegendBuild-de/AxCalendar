@@ -107,7 +107,7 @@ public class CalendarGui extends GuiFrame {
                                 SoundUtils.playSound(player, CONFIG.getString("sounds.claimed"));
                                 for (Reward reward : day.rewards()) {
                                     AxCalendar.getInstance().getLogger().info("DEBUG: Player " + player.getName() + "is attempting reward " + reward.name() + " with group " + group);
-                                    if (reward.group() != group) continue;
+                                    if (reward.group() != group && reward.group() != 0) continue;
                                     AxCalendar.getInstance().getLogger().info("DEBUG: Player " + player.getName() + "is claiming reward " + reward.name() + " with group " + group + " executing actions ...");
                                     for (String command : reward.claimCommands()) {
                                         command = command.replace("%player%", player.getName());
