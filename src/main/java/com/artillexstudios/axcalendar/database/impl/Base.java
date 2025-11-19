@@ -1,5 +1,6 @@
 package com.artillexstudios.axcalendar.database.impl;
 
+import com.artillexstudios.axcalendar.AxCalendar;
 import com.artillexstudios.axcalendar.database.Database;
 import com.artillexstudios.axcalendar.gui.data.Day;
 import com.artillexstudios.axcalendar.utils.IpUtils;
@@ -48,12 +49,16 @@ public abstract class Base implements Database {
             DELETE FROM axcalendar_data WHERE `uuid` = ?;
     """;
 
+    private final String DELETE_USER_GROUP = """
+            DELETE FROM axcalendar_groups WHERE `uuid` = ?;
+    """;
+
     private final String GET_GROUP = """
-            SELECT `group` from axcalendar_data WHERE `uuid` = ?
+            SELECT `group` FROM axcalendar_groups WHERE `uuid` = ?
     """;
 
     private final String SET_GROUP = """
-            INSERT INTO axcalendar_groups (`uuid`, `group`) VALUES (?, ?)
+            INSERT IGNORE INTO axcalendar_groups (`uuid`, `group`) VALUES (?, ?)
     """;
 
     public abstract Connection getConnection();
@@ -112,6 +117,7 @@ public abstract class Base implements Database {
     public void reset(@NotNull OfflinePlayer player) {
         try (Connection conn = getConnection()) {
             runner.execute(conn, DELETE_USER, player.getUniqueId().toString());
+            runner.execute(conn, DELETE_USER_GROUP, player.getUniqueId().toString());
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -119,8 +125,10 @@ public abstract class Base implements Database {
 
     @Override
     public Integer getGroup(@NotNull Player player) {
+        setGroup(player, (int)(Math.random()*AxCalendar.CONFIG.getInt("num-groups", 1) + 1));
+        ScalarHandler<Integer> scalarHandler = new ScalarHandler<>();
         try (Connection conn = getConnection()) {
-            return runner.execute(conn, GET_GROUP, player.getUniqueId().toString());
+            return runner.query(conn, GET_GROUP, scalarHandler, player.getUniqueId().toString());
         } catch (SQLException ex) {
             ex.printStackTrace();
             return 0;
@@ -130,9 +138,8 @@ public abstract class Base implements Database {
     @Override
     public void setGroup(@NotNull Player player, Integer group) {
         try (Connection conn = getConnection()) {
-            if (runner.execute(conn, GET_GROUP, player.getUniqueId().toString()) == 0) {
-                runner.execute(conn, SET_GROUP, player.getUniqueId().toString(), group);
-            }
+            AxCalendar.getInstance().getLogger().info("DEBUG: " + player.getName() + " has claimed into group: " + group);
+            runner.execute(conn, SET_GROUP, player.getUniqueId().toString(), group);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

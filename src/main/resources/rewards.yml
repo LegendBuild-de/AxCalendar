@@ -4,6 +4,7 @@
 # you can create any amount of rewards here, make sure to set the day
 # only 1 reward should be connected to a single day (in a single reward, you can give multiple items/run commands)
 
+#group | group-0 is for everyone
 group-1:
   reward-example:
     # days when this rewards will be given
